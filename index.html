@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0b1245">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%90%B5%3C/text%3E%3C/svg%3E">
+<title>Block Blast – Edición Especial para Mamá Liliana</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+html,body{margin:0;height:100%;overflow:hidden;touch-action:none;overscroll-behavior:none}
+body{color:#fff;font-family:"Baloo 2","Fredoka","Nunito","Trebuchet MS","Segoe UI",system-ui,sans-serif;font-weight:800;
+background:radial-gradient(120% 80% at 50% 0%,#233296 0%,#0b1245 55%,#050826 100%)}
+.screen{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;padding:calc(env(safe-area-inset-top) + 10px) 12px calc(env(safe-area-inset-bottom) + 10px)}
+.screen.on{display:flex}
+#lobby{justify-content:center;text-align:center;gap:14px}
+.gems{display:flex;gap:8px}
+.gems i{width:34px;height:34px;border-radius:9px;animation:bob 2.2s ease-in-out infinite}
+.gems i:nth-child(2){animation-delay:.2s}.gems i:nth-child(3){animation-delay:.4s}.gems i:nth-child(4){animation-delay:.6s}.gems i:nth-child(5){animation-delay:.8s}
+@keyframes bob{50%{transform:translateY(-10px) rotate(6deg)}}
+h1{margin:0;font-size:clamp(48px,16vw,84px);line-height:.95;letter-spacing:2px;font-weight:900;
+background:linear-gradient(180deg,#fff3b0 0%,#ffc43d 45%,#ff6b5e 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+filter:drop-shadow(0 0 14px rgba(255,196,61,.55)) drop-shadow(0 4px 0 #7a2a1f)}
+.sub{font-size:clamp(18px,5.4vw,26px);color:#7ff0e4;text-shadow:0 0 12px rgba(31,209,193,.7);max-width:340px}
+.ded{font-size:clamp(15px,4.4vw,19px);color:#ffd9d4;max-width:320px;font-weight:700;line-height:1.35}
+.best{background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.18);border-radius:16px;padding:8px 18px;font-size:18px}
+.btn{font:inherit;font-weight:900;border:0;color:#4a2400;cursor:pointer;border-radius:22px;padding:14px 34px;font-size:22px;
+background:linear-gradient(180deg,#ffe28a,#ffc43d);box-shadow:0 6px 0 #b8801a,0 12px 24px rgba(0,0,0,.4);transition:transform .08s}
+.btn:active{transform:translateY(5px);box-shadow:0 1px 0 #b8801a}
+.btn.big{font-size:34px;padding:18px 64px;letter-spacing:2px;animation:pulse 1.6s ease-in-out infinite}
+.btn.alt{background:linear-gradient(180deg,#c4a8ff,#9b6bff);color:#fff;box-shadow:0 5px 0 #5a35b8,0 10px 20px rgba(0,0,0,.4);font-size:18px;padding:10px 24px}
+@keyframes pulse{50%{transform:scale(1.05)}}
+#game{justify-content:flex-start;gap:8px}
+.hud{width:100%;max-width:480px;display:flex;align-items:center;justify-content:space-between;padding-right:52px;min-height:70px}
+.hud .l{font-size:15px;color:#ffe28a}.hud .l b{display:block;font-size:22px;color:#fff}
+.hud .c{text-align:center}.hud .c small{font-size:14px;color:#9fb0ff;display:block}
+#score{font-size:44px;line-height:1;font-weight:900;text-shadow:0 0 16px rgba(127,240,228,.6)}
+#streak{height:26px;font-size:16px;color:#ffb199;opacity:0;transition:opacity .2s}
+#streak.on{opacity:1}
+#board{display:grid;grid-template-columns:repeat(8,1fr);gap:3px;padding:6px;border-radius:20px;position:relative;
+background:#0a1040;border:3px solid #3446c8;box-shadow:0 0 30px rgba(80,110,255,.35),inset 0 0 20px rgba(0,0,0,.5)}
+.cell{border-radius:7px;background:#17237a;box-shadow:inset 0 2px 3px rgba(0,0,0,.35);aspect-ratio:1}
+.cell.f,.b{background:linear-gradient(145deg,var(--l),var(--c));
+box-shadow:inset 0 -3px 0 rgba(0,0,0,.28),inset 0 2px 0 rgba(255,255,255,.5),0 1px 3px rgba(0,0,0,.45)}
+.cell.gh{background:var(--c);opacity:.55;box-shadow:0 0 10px var(--c)}
+.cell.hl{outline:2px solid #fff;outline-offset:-2px;box-shadow:0 0 14px #fff,inset 0 0 10px rgba(255,255,255,.7);filter:brightness(1.35)}
+.cell.land{animation:land .28s ease-out}
+.cell.clr{animation:clr .38s ease-in forwards;z-index:2}
+@keyframes land{0%{transform:scale(.6)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+@keyframes clr{0%{filter:brightness(1)}35%{transform:scale(1.2);filter:brightness(2.4)}100%{transform:scale(0);opacity:0}}
+#tray{width:100%;max-width:480px;display:flex;justify-content:space-around;align-items:center;margin-top:6px}
+.slot{flex:1;display:flex;justify-content:center;align-items:center;touch-action:none;padding:6px 0}
+.slot.lift>*{opacity:.2}
+.slot.in>*{animation:land .35s ease-out}
+.slot.blocked>*{filter:grayscale(.7) brightness(.7);animation:shake .3s 3}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.p{display:grid}
+.b{border-radius:22%}
+.p .e{visibility:hidden}
+.drag{position:fixed;left:0;top:0;z-index:50;pointer-events:none;filter:drop-shadow(0 10px 8px rgba(0,0,0,.45))}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:60}
+#flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:55}
+#flash.go{animation:fl .35s ease-out}
+@keyframes fl{0%{opacity:.5}100%{opacity:0}}
+.ft{position:fixed;left:50%;z-index:70;pointer-events:none;font-weight:900;text-align:center;white-space:nowrap;
+font-size:clamp(28px,9vw,44px);color:#fff3b0;text-shadow:0 3px 0 #b8501f,0 0 20px #ffc43d;transform:translateX(-50%);animation:ft 1.3s ease-out forwards}
+.ft small{display:block;font-size:.55em;color:#ffb199}
+@keyframes ft{0%{opacity:0;transform:translate(-50%,20px) scale(.5)}20%{opacity:1;transform:translate(-50%,0) scale(1.15)}100%{opacity:0;transform:translate(-50%,-80px) scale(1)}}
+#mute{position:fixed;top:calc(env(safe-area-inset-top) + 10px);right:12px;z-index:80;width:44px;height:44px;border-radius:50%;border:2px solid rgba(255,255,255,.25);background:rgba(10,16,64,.8);font-size:22px;color:#fff;cursor:pointer}
+.modal{position:fixed;inset:0;z-index:90;background:rgba(3,5,25,.82);display:none;align-items:center;justify-content:center;padding:20px}
+.modal.on{display:flex}
+.card{width:100%;max-width:360px;text-align:center;padding:26px 22px;border-radius:26px;background:linear-gradient(160deg,#2b3bb0,#141c6a);border:3px solid #ffc43d;box-shadow:0 0 40px rgba(255,196,61,.35);animation:land .4s ease-out;display:flex;flex-direction:column;gap:12px;align-items:center}
+.card h2{margin:0;font-size:28px;line-height:1.1;color:#ffe28a}
+.card p{margin:0;font-weight:700;font-size:17px;line-height:1.4;color:#ffe9e5}
+.card .big-s{font-size:56px;font-weight:900;line-height:1;text-shadow:0 0 18px rgba(127,240,228,.7)}
+.rec{color:#7ff0e4;font-size:18px}
+.newrec{color:#ffc43d;font-size:22px;animation:pulse 1s infinite}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important}}
+</style>
+</head>
+<body>
+<button id="mute" aria-label="Sonido">🔊</button>
+
+<section id="lobby" class="screen on">
+  <div class="gems" id="gems"></div>
+  <h1>BLOCK<br>BLAST</h1>
+  <div class="sub">Edición Especial para Mamá Liliana</div>
+  <div class="ded">Hecho con mucho cariño para Liliana, de parte del Monito 🐵❤️</div>
+  <div class="best">🏆 Mejor puntaje: <span id="lbest">0</span></div>
+  <button class="btn big" id="play">JUGAR</button>
+  <button class="btn alt" id="msg1">💌 Mensaje del Monito</button>
+</section>
+
+<section id="game" class="screen">
+  <div class="hud">
+    <div class="l">Mejor 🏆<b id="best">0</b></div>
+    <div class="c"><small>Puntos</small><div id="score">0</div></div>
+    <div class="l" style="text-align:right;visibility:hidden">.</div>
+  </div>
+  <div id="streak"></div>
+  <div id="board"></div>
+  <div id="tray"></div>
+</section>
+
+<div class="modal" id="over"><div class="card">
+  <h2>¡Gran partida, Mamá Liliana! 💐</h2>
+  <div class="big-s" id="fscore">0</div>
+  <div class="rec">Récord personal: <span id="frec">0</span></div>
+  <div class="newrec" id="newrec" style="display:none">🏆 ¡Nuevo récord! 🏆</div>
+  <p id="phrase"></p>
+  <button class="btn" id="again">JUGAR DE NUEVO</button>
+  <button class="btn alt" id="msg2">💌 Mensaje del Monito</button>
+</div></div>
+
+<div class="modal" id="msgm"><div class="card">
+  <h2>Del Monito para vos 🐵</h2>
+  <p>Mamá Liliana: este jueguito lo hice pensando en vos, para que tengas un ratito lindo para despejarte, sonreír y jugar todo lo que quieras.<br><br>Gracias por tu amor, tu paciencia y tus abrazos. Te quiero hasta la luna y de vuelta. ❤️</p>
+  <p style="background:rgba(255,255,255,.08);border-radius:14px;padding:12px;font-size:15px"><b style="color:#7ff0e4">Proverbios 23:22</b><br>22. Oye á tu padre, á aquel que te engendró; Y cuando tu madre envejeciere, no la menosprecies.<br><b style="color:#7ff0e4">Proverbios 23:22</b></p>
+  <p style="color:#ffe28a">— El Monito 🐵</p>
+  <button class="btn" id="closem">¡Gracias, Monito!</button>
+</div></div>
+
+<div id="flash"></div>
+<canvas id="fx"></canvas>
+
+<script>
+(()=>{
+const $=id=>document.getElementById(id);
+const N=8,GAP=3,PAD=6,LIFT=40;
+const COLORS=[["#ff6b5e","#ffa297"],["#ffc43d","#ffe48f"],["#1fd1c1","#82f2e6"],["#9b6bff","#c9b0ff"],["#22c36b","#7aeaa8"]];
+const PHRASES=["Cada partida tuya me hace sonreír, Mamá. ¡Sos la mejor! 🐵","Sos una campeona, Mamá Liliana. ¡Te quiero muchísimo! ❤️","¡Qué mente brillante tenés! Estoy muy orgulloso de vos. 🌟","Un ratito de juego y a seguir sonriendo. ¡Vos podés con todo! 💪","Gracias por jugar mi regalito. ¡Cada bloque lleva un abrazo! 🤗","¡La próxima batís tu récord, Mamá! El Monito te alienta. 🎉","Sos mi estrella favorita, Mamá. ¡Jugá de nuevo! ✨","Con cariño, paciencia y buena puntería: así sos vos. 🌷"];
+const BASE=["1","11","111","1111","11111","11,11","111,111,111","111,111","10,11","100,100,111","111,010","011,110","110,011","111,100","1,1"].map(s=>s.split(",").map(r=>[...r].map(Number)));
+const rot=m=>m[0].map((_,c)=>m.map(r=>r[c]).reverse());
+const SHAPES=(()=>{const seen=new Set(),out=[];BASE.forEach(b=>{let m=b;for(let i=0;i<4;i++){const k=JSON.stringify(m);if(!seen.has(k)){seen.add(k);out.push(m)}m=rot(m)}});return out})();
+
+let grid,tray,score,streak,best=0,busy=false,over=false,recShown=false,pitch=40,drag=null,muted=false,cells=[];
+try{best=+localStorage.getItem("bbLiliana")||0}catch(e){}
+const boardEl=$("board"),trayEl=$("tray");
+
+/* ---------- Audio ---------- */
+let AC;
+function ac(){if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state==="suspended")AC.resume();return AC}
+function tone(f,d,type="sine",v=.12,t0=0,f2){if(muted)return;const a=ac();if(!a)return;const t=a.currentTime+t0,o=a.createOscillator(),g=a.createGain();
+o.type=type;o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);
+g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.015);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+o.connect(g).connect(a.destination);o.start(t);o.stop(t+d+.05)}
+const SFX={
+grab:()=>tone(520,.1,"sine",.08,0,700),
+place:()=>{tone(300,.09,"triangle",.16,0,180);tone(900,.05,"sine",.05)},
+clear:n=>{const s=[523,659,784,1047,1319,1568];for(let i=0;i<Math.min(3+n,6);i++)tone(s[i],.45,"sine",.1,i*.07)},
+record:()=>{[523,659,784,1047,784,1047,1319].forEach((f,i)=>tone(f,.5,"triangle",.1,i*.12))},
+over:()=>[392,330,262].forEach((f,i)=>tone(f,.5,"sine",.09,i*.18))};
+const vib=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
+$("mute").onclick=()=>{muted=!muted;$("mute").textContent=muted?"🔇":"🔊";if(!muted){ac();tone(660,.1)}};
+
+/* ---------- Helpers ---------- */
+function pieceEl(m,color,size,gap,cls){const d=document.createElement("div");d.className="p "+(cls||"");
+d.style.gridTemplateColumns=`repeat(${m[0].length},${size}px)`;d.style.gridAutoRows=size+"px";d.style.gap=gap+"px";
+m.forEach(r=>r.forEach(v=>{const c=document.createElement("div");c.className=v?"b":"e";if(v){c.style.setProperty("--c",COLORS[color][0]);c.style.setProperty("--l",COLORS[color][1])}d.appendChild(c)}));return d}
+function layout(){const S=Math.max(250,Math.min(innerWidth*.94,innerHeight-330,470));boardEl.style.width=boardEl.style.height=S+"px";
+pitch=(S-2*PAD-6+GAP)/N;renderTray()}
+function canPlace(g,m,r0,c0){if(r0<0||c0<0||r0+m.length>N||c0+m[0].length>N)return false;
+for(let r=0;r<m.length;r++)for(let c=0;c<m[0].length;c++)if(m[r][c]&&g[r0+r][c0+c]>=0)return false;return true}
+function canFit(m){for(let r=0;r<=N-m.length;r++)for(let c=0;c<=N-m[0].length;c++)if(canPlace(grid,m,r,c))return true;return false}
+function fullLines(g){const rows=[],cols=[];for(let i=0;i<N;i++){if(g[i].every(v=>v>=0))rows.push(i);if(g.every(r=>r[i]>=0))cols.push(i)}return{rows,cols}}
+
+/* ---------- Render ---------- */
+function buildBoard(){boardEl.innerHTML="";cells=[];for(let i=0;i<64;i++){const d=document.createElement("div");d.className="cell";boardEl.appendChild(d);cells.push(d)}}
+function render(){for(let r=0;r<N;r++)for(let c=0;c<N;c++){const v=grid[r][c],d=cells[r*N+c];d.className="cell"+(v>=0?" f":"");
+if(v>=0){d.style.setProperty("--c",COLORS[v][0]);d.style.setProperty("--l",COLORS[v][1])}}}
+function renderTray(fresh){trayEl.innerHTML="";if(!tray)return;tray.forEach((p,i)=>{const s=document.createElement("div");s.className="slot"+(fresh?" in":"");
+s.style.minHeight=(pitch*2.5+12)+"px";
+if(p){s.appendChild(pieceEl(p.m,p.c,pitch*.5,2));s.addEventListener("pointerdown",e=>down(e,i,s))}trayEl.appendChild(s)})}
+function hud(){$("score").textContent=score;$("best").textContent=Math.max(best,score);
+const s=$("streak");if(streak>=2){s.textContent="🔥 Racha x"+streak;s.classList.add("on")}else s.classList.remove("on")}
+
+/* ---------- Drag & drop ---------- */
+function down(e,i,slot){if(busy||over||drag)return;e.preventDefault();ac();SFX.grab();const p=tray[i];
+const el=pieceEl(p.m,p.c,pitch-GAP,GAP,"drag");document.body.appendChild(el);slot.classList.add("lift");
+drag={i,p,el,slot,w:p.m[0].length*pitch-GAP,h:p.m.length*pitch-GAP,t:null};move(e)}
+function move(e){if(!drag)return;const{el,w,h,p}=drag;const x=e.clientX-w/2,y=e.clientY-h-LIFT;
+el.style.transform=`translate(${x}px,${y}px)`;const br=boardEl.getBoundingClientRect();
+const c0=Math.round((x-br.left-PAD-3)/pitch),r0=Math.round((y-br.top-PAD-3)/pitch);
+if(canPlace(grid,p.m,r0,c0)){drag.t={r:r0,c:c0};ghost(p,r0,c0)}else{drag.t=null;ghost()}}
+function ghost(p,r0,c0){cells.forEach(d=>{d.classList.remove("gh","hl")});if(!p)return;
+const g=grid.map(r=>r.slice());p.m.forEach((row,dr)=>row.forEach((v,dc)=>{if(v){g[r0+dr][c0+dc]=p.c;const d=cells[(r0+dr)*N+c0+dc];d.classList.add("gh");d.style.setProperty("--c",COLORS[p.c][0])}}));
+const{rows,cols}=fullLines(g);rows.forEach(r=>{for(let c=0;c<N;c++)cells[r*N+c].classList.add("hl")});cols.forEach(c=>{for(let r=0;r<N;r++)cells[r*N+c].classList.add("hl")})}
+function up(){if(!drag)return;const d=drag;drag=null;d.el.remove();d.slot.classList.remove("lift");ghost();
+if(d.t)place(d.p,d.t.r,d.t.c,d.i)}
+addEventListener("pointermove",move);addEventListener("pointerup",up);addEventListener("pointercancel",up);
+document.addEventListener("touchmove",e=>e.preventDefault(),{passive:false});
+document.addEventListener("gesturestart",e=>e.preventDefault());
+document.addEventListener("contextmenu",e=>e.preventDefault());
+
+/* ---------- Game flow ---------- */
+function newTray(){let t;for(let k=0;k<40;k++){t=[0,1,2].map(()=>({m:SHAPES[Math.random()*SHAPES.length|0],c:Math.random()*5|0}));if(t.some(p=>canFit(p.m)))break}
+tray=t;renderTray(true)}
+function startGame(){grid=Array.from({length:N},()=>Array(N).fill(-1));score=0;streak=0;busy=false;over=false;recShown=false;
+$("over").classList.remove("on");$("lobby").classList.remove("on");$("game").classList.add("on");buildBoard();layout();render();newTray();hud()}
+function place(p,r0,c0,i){busy=true;let n=0;const placed=[];
+p.m.forEach((row,dr)=>row.forEach((v,dc)=>{if(v){grid[r0+dr][c0+dc]=p.c;n++;placed.push((r0+dr)*N+c0+dc)}}));
+tray[i]=null;renderTray();render();placed.forEach(k=>cells[k].classList.add("land"));SFX.place();vib(12);score+=n;
+const{rows,cols}=fullLines(grid),lines=rows.length+cols.length;
+if(lines>0){streak++;const set=new Set();rows.forEach(r=>{for(let c=0;c<N;c++)set.add(r*N+c)});cols.forEach(c=>{for(let r=0;r<N;r++)set.add(r*N+c)});
+const pts=Math.round(lines*lines*10*(1+(streak-1)*.5));score+=pts;
+const w=boardEl.getBoundingClientRect();let k=0;
+set.forEach(idx=>{const d=cells[idx];d.classList.remove("land");d.style.animationDelay=(k++%8)*14+"ms";d.classList.add("clr");
+const b=d.getBoundingClientRect(),v=grid[idx/N|0][idx%N];burst(b.left+b.width/2,b.top+b.height/2,COLORS[v>=0?v:0][0],6)});
+const f=$("flash");f.classList.remove("go");void f.offsetWidth;f.classList.add("go");
+SFX.clear(lines+(streak>1?1:0));vib([30,20,60]);
+const txt=lines>=4?"¡Increíble!":lines===3?"¡Excelente, Liliana!":lines===2?"¡Combo x2!":"¡Muy bien, Liliana!";
+floatText(txt+(streak>=2?`<small>🔥 Racha x${streak} · +${pts}</small>`:`<small>+${pts}</small>`),w.top+w.height*.35);
+setTimeout(()=>{set.forEach(idx=>{grid[idx/N|0][idx%N]=-1});render();finish()},400)}
+else{streak=0;finish()}}
+function finish(){hud();if(!recShown&&best>0&&score>best){recShown=true;SFX.record();floatText("¡Nuevo récord! 🏆",boardEl.getBoundingClientRect().top+40)}
+if(tray.every(p=>!p))newTray();busy=false;
+const left=tray.filter(Boolean);
+if(!left.some(p=>canFit(p.m))){over=true;[...trayEl.children].forEach(s=>s.classList.add("blocked"));setTimeout(showOver,1100)}}
+function showOver(){const isRec=score>best&&score>0;if(score>best){best=score;try{localStorage.setItem("bbLiliana",best)}catch(e){}}
+SFX.over();$("fscore").textContent=score;$("frec").textContent=best;$("newrec").style.display=isRec?"block":"none";
+$("phrase").textContent=PHRASES[Math.random()*PHRASES.length|0];$("over").classList.add("on");hud()}
+
+/* ---------- Effects ---------- */
+function floatText(html,top){const d=document.createElement("div");d.className="ft";d.innerHTML=html;d.style.top=top+"px";document.body.appendChild(d);setTimeout(()=>d.remove(),1400)}
+const cv=$("fx"),cx=cv.getContext("2d");let parts=[],raf=0;
+function rs(){cv.width=innerWidth;cv.height=innerHeight}rs();addEventListener("resize",()=>{rs();layout()});
+function burst(x,y,col,n){for(let i=0;i<n;i++){const a=Math.random()*6.28,s=2+Math.random()*6;
+parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-2,life:1,sz:3+Math.random()*5,col:Math.random()<.3?"#fff":col})}if(!raf)raf=requestAnimationFrame(loop)}
+function loop(){cx.clearRect(0,0,cv.width,cv.height);parts=parts.filter(p=>p.life>0);
+parts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.18;p.life-=.022;cx.globalAlpha=Math.max(p.life,0);cx.fillStyle=p.col;cx.shadowColor=p.col;cx.shadowBlur=8;
+cx.beginPath();cx.arc(p.x,p.y,Math.max(.1,p.sz*p.life),0,6.28);cx.fill()});cx.globalAlpha=1;
+raf=parts.length?requestAnimationFrame(loop):0;if(!raf)cx.clearRect(0,0,cv.width,cv.height)}
+
+/* ---------- UI ---------- */
+const g=$("gems");COLORS.forEach(c=>{const i=document.createElement("i");i.className="b";i.style.setProperty("--c",c[0]);i.style.setProperty("--l",c[1]);g.appendChild(i)});
+$("lbest").textContent=best;
+const openMsg=()=>{ac();$("msgm").classList.add("on")};
+$("play").onclick=()=>{ac();startGame()};$("again").onclick=startGame;
+$("msg1").onclick=openMsg;$("msg2").onclick=openMsg;$("closem").onclick=()=>$("msgm").classList.remove("on");
+})();
+</script>
+</body>
+</html>
